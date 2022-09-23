@@ -15,6 +15,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddHttpClient("rick", c =>
 {
     c.BaseAddress = new Uri("https://rickandmortyapi.com/api/");
+    c.DefaultRequestHeaders.Add("test", "test2");
 });
 
 var app = builder.Build();

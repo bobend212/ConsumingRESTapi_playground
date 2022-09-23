@@ -13,6 +13,17 @@ else if (model is null)
 }
 else
 {
+    <div style="display: flex; justify-content: space-between">
+        @if (!string.IsNullOrEmpty(model.info.prev))
+        {
+            <button @onclick="(() => Prev(model.info))">Previous</button>
+        }
+        <div></div>
+        @if (!string.IsNullOrEmpty(model.info.next))
+        {
+            <button @onclick="(() => Next(model.info))">Next</button>
+        }
+    </div>
     <table class="table table-sm table-striped">
         <thead class="thead-dark">
             <tr>
@@ -42,9 +53,12 @@ else
     private CharacterModel model;
     string errorString;
 
+    private List<Result> test;
+
     protected override async Task OnInitializedAsync()
     {
         model = await RickAndMortyService.GetAllCharacters();
+        //test = await RickAndMortyService.GetAllCharactersExcludingAlreadyBooked();
 
         //var client = clientFactory.CreateClient("rick");
 
@@ -76,5 +90,15 @@ else
     private void NewThought(int id)
     {
         NavigationManager.NavigateTo($"new-notebook/{id}");
+    }
+
+    private async Task Next(Info info)
+    {
+        model = await RickAndMortyService.GoToPage(info.next);
+    }
+
+    private async Task Prev(Info info)
+    {
+        model = await RickAndMortyService.GoToPage(info.prev);
     }
 }
