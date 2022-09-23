@@ -1,0 +1,46 @@
+﻿@page "/new-notebook/{id:int}"
+@inject RickAndMortyService RickAndMortyService
+@inject NavigationManager NavigationManager
+
+<h3>@Id</h3>
+
+@if (character is null)
+{
+    <p>fetching data...</p>
+}
+else
+{
+    <h4>@character.name</h4>
+    <h4>@character.location.name</h4>
+
+    <EditForm Model="newNotebook" OnSubmit="HandleSubmit">
+        <div>
+            <label>Thought</label>
+            <InputText @bind-Value="newNotebook.MyThoughts" class="form-control"></InputText>
+        </div>
+        <br />
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </EditForm>
+}
+
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    Result character;
+    Notebook newNotebook = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        character = await RickAndMortyService.GetSingleCharacter(Id);
+    }
+
+    async Task HandleSubmit()
+    {
+        newNotebook.Character = character;
+        await RickAndMortyService.PostNotebook(newNotebook);
+        NavigationManager.NavigateTo("notebooks");
+    }
+}

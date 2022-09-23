@@ -1,0 +1,45 @@
+﻿@page "/notebooks"
+
+@using BlazorApp1.Data
+@inject NotebookService NotebookService
+
+
+@if (notebooks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>CharacterModel</th>
+                <th>Thoughts</th>
+                <th>pics</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in notebooks)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Character.name</td>
+                    <td>@item.MyThoughts</td>
+                    <td>
+                        <img src="@item.Character.image" alt="@item.Character.name" height="60" width="60">
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Notebook>? notebooks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        notebooks = await NotebookService.GetNotebooksAsync();
+    }
+}

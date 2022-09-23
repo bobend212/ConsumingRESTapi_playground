@@ -1,0 +1,80 @@
+﻿@page "/characters"
+@inject IHttpClientFactory clientFactory
+@inject RickAndMortyService RickAndMortyService
+@inject NavigationManager NavigationManager
+
+@if (string.IsNullOrWhiteSpace(errorString) == false)
+{
+    <p>@errorString</p>
+}
+else if (model is null)
+{
+    <p>fetching data...</p>
+}
+else
+{
+    <table class="table table-sm table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Species</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in model.results)
+            {
+                <tr>
+                    <td>@item.id</td>
+                    <td>@item.name</td>
+                    <td>@item.status</td>
+                    <td>@item.species</td>
+                    <td><button @onclick="(() => NewThought(item.id))">click</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private CharacterModel model;
+    string errorString;
+
+    protected override async Task OnInitializedAsync()
+    {
+        model = await RickAndMortyService.GetAllCharacters();
+
+        //var client = clientFactory.CreateClient("rick");
+
+        //var request = new HttpRequestMessage(HttpMethod.Get, "https://rickandmortyapi.com/api/character");
+
+        //HttpResponseMessage response = await client.SendAsync(request);
+
+        //if (response.IsSuccessStatusCode)
+        //{
+        //    model = await response.Content.ReadFromJsonAsync<CharacterModel>();
+        //    errorString = null;
+        //}
+        //else
+        //{
+        //    errorString = $"something went wrong: {response.ReasonPhrase}";
+        //}
+
+        //try
+        //{
+        //    model = await client.GetFromJsonAsync<CharacterModel>("character");
+        //    errorString = null;
+        //}
+        //catch (Exception ex)
+        //{
+        //    errorString = $"something went wrong: {ex.Message}";
+        //}
+    }
+
+    private void NewThought(int id)
+    {
+        NavigationManager.NavigateTo($"new-notebook/{id}");
+    }
+}
