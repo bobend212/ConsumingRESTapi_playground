@@ -1,45 +1,59 @@
 ﻿using BlazorApp1.Models;
-using Microsoft.EntityFrameworkCore;
-using static System.Net.WebRequestMethods;
+using RestSharp;
 
 namespace BlazorApp1.Data
 {
     public class RickAndMortyService
     {
-        private readonly IHttpClientFactory _http;
-        private readonly DataContext _context;
+        private readonly RestClient _client;
+        private const string baseUrl = "https://rickandmortyapi.com/api/";
 
-        public RickAndMortyService(IHttpClientFactory http, DataContext context)
+        public RickAndMortyService()
         {
-            _http = http;
-            _context = context;
+            _client = new RestClient(baseUrl);
         }
 
         public async Task<List<Result>> GetAllCharactersExcludingAlreadyBooked()
         {
-            var client = _http.CreateClient("rick");
+            //var client = _http.CreateClient("rick");
 
-            CharacterModel modelAll;
-            List<Result> allConverted;
-            List<Result> booked;
+            //CharacterModel modelAll;
+            //List<Result> allConverted;
+            //List<Result> booked;
 
-            modelAll = await client.GetFromJsonAsync<CharacterModel>("character");
-            allConverted = modelAll.results.ToList();
-            booked = await _context.Notebooks.Include(x => x.Character).Select(x => x.Character).ToListAsync();
+            //modelAll = await client.GetFromJsonAsync<CharacterModel>("character");
+            //allConverted = modelAll.results.ToList();
+            //booked = await _context.Notebooks.Include(x => x.Character).Select(x => x.Character).ToListAsync();
 
-            var result = allConverted.Where(p => !booked.Any(p2 => p2.id == p.id)).ToList();
+            //var result = allConverted.Where(p => !booked.Any(p2 => p2.id == p.id)).ToList();
 
-            return result;
+            return null;
         }
 
         public async Task<CharacterModel> GetAllCharacters()
         {
             CharacterModel model;
-            var client = _http.CreateClient("rick");
 
             try
             {
-                model = await client.GetFromJsonAsync<CharacterModel>("character");
+                model = await _client.GetJsonAsync<CharacterModel>("character");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+            return model;
+        }
+
+        public async Task<CharacterModel> SearchCharacter(string nameString)
+        {
+            CharacterModel model;
+
+            try
+            {
+                var request = new RestRequest("character").AddParameter("name", nameString);
+                model = await _client.GetAsync<CharacterModel>(request);
             }
             catch (Exception ex)
             {
@@ -51,52 +65,36 @@ namespace BlazorApp1.Data
 
         public async Task<Result> GetSingleCharacter(int id)
         {
-            Result result;
-            var client = _http.CreateClient("rick");
+            //Result result;
+            //var client = _http.CreateClient("rick");
 
-            try
-            {
-                result = await client.GetFromJsonAsync<Result>($"character/{id}");
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            //try
+            //{
+            //    result = await client.GetFromJsonAsync<Result>($"character/{id}");
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw;
+            //}
 
-            return result;
+            return null;
         }
 
         public async Task<CharacterModel> GoToPage(string pageNumber)
         {
-            CharacterModel model;
-            var client = _http.CreateClient("rick");
+            //CharacterModel model;
+            //var client = _http.CreateClient("rick");
 
-            try
-            {
-                model = await client.GetFromJsonAsync<CharacterModel>(pageNumber);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            //try
+            //{
+            //    model = await client.GetFromJsonAsync<CharacterModel>(pageNumber);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw;
+            //}
 
-            return model;
-        }
-
-        public async Task<Notebook> PostNotebook(Notebook model)
-        {
-            try
-            {
-                _context.Notebooks.Add(model);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("error: " + ex);
-                throw;
-            }
-
-            return model;
+            return null;
         }
     }
 }

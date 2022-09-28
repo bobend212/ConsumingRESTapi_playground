@@ -16,5 +16,21 @@ namespace BlazorApp1.Data
         {
             return await _context.Notebooks.Include(x => x.Character).ToListAsync();
         }
+
+        public async Task<Notebook> PostNotebook(Notebook model)
+        {
+            try
+            {
+                _context.Notebooks.Add(model);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("error: " + ex);
+                throw;
+            }
+
+            return model;
+        }
     }
 }

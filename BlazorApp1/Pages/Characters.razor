@@ -3,16 +3,27 @@
 @inject RickAndMortyService RickAndMortyService
 @inject NavigationManager NavigationManager
 
-@if (string.IsNullOrWhiteSpace(errorString) == false)
-{
-    <p>@errorString</p>
-}
-else if (model is null)
+<div class="container">
+    <div class="form-inline">
+        <div class="input-group">
+            <input type="text" class="form-control mb-2 mr-sm-2" placeholder="search..." @bind-value="searchQuery">
+            <button type="button" ty class="btn btn-success mb-2" @onclick="(() => Search(searchQuery))">Search</button>
+            <button type="button" ty class="btn btn-outline-info mb-2" @onclick="(() => Search(string.Empty))">Clear</button>
+        </div>
+    </div>
+</div>
+
+@if (model is null)
 {
     <p>fetching data...</p>
 }
+else if (model.info is null)
+{
+    <p>nothing found</p>
+}
 else
 {
+    <h5>@model.info.count entries, @model.info.pages page(s)</h5>
     <div style="display: flex; justify-content: space-between">
         @if (!string.IsNullOrEmpty(model.info.prev))
         {
@@ -24,6 +35,7 @@ else
             <button @onclick="(() => Next(model.info))">Next</button>
         }
     </div>
+
     <table class="table table-sm table-striped">
         <thead class="thead-dark">
             <tr>
@@ -52,39 +64,17 @@ else
 @code {
     private CharacterModel model;
     string errorString;
-
+    string searchQuery;
     private List<Result> test;
 
     protected override async Task OnInitializedAsync()
     {
         model = await RickAndMortyService.GetAllCharacters();
-        //test = await RickAndMortyService.GetAllCharactersExcludingAlreadyBooked();
+    }
 
-        //var client = clientFactory.CreateClient("rick");
-
-        //var request = new HttpRequestMessage(HttpMethod.Get, "https://rickandmortyapi.com/api/character");
-
-        //HttpResponseMessage response = await client.SendAsync(request);
-
-        //if (response.IsSuccessStatusCode)
-        //{
-        //    model = await response.Content.ReadFromJsonAsync<CharacterModel>();
-        //    errorString = null;
-        //}
-        //else
-        //{
-        //    errorString = $"something went wrong: {response.ReasonPhrase}";
-        //}
-
-        //try
-        //{
-        //    model = await client.GetFromJsonAsync<CharacterModel>("character");
-        //    errorString = null;
-        //}
-        //catch (Exception ex)
-        //{
-        //    errorString = $"something went wrong: {ex.Message}";
-        //}
+    private async Task Search(string searchQuery)
+    {
+        model = await RickAndMortyService.SearchCharacter(searchQuery);
     }
 
     private void NewThought(int id)

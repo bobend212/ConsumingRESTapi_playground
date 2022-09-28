@@ -1,5 +1,6 @@
 using BlazorApp1.Data;
 using Microsoft.EntityFrameworkCore;
+using RestSharp;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +12,15 @@ builder.Services.AddScoped<NotebookService>();
 builder.Services.AddScoped<RickAndMortyService>();
 
 builder.Services.AddDbContext<DataContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+//builder.Services.AddHttpClient("rick", c =>
+//{
+//    c.BaseAddress = new Uri("https://rickandmortyapi.com/api/");
+//    c.DefaultRequestHeaders.Add("test", "test2");
+//});
+
 builder.Services.AddHttpClient();
-builder.Services.AddHttpClient("rick", c =>
-{
-    c.BaseAddress = new Uri("https://rickandmortyapi.com/api/");
-    c.DefaultRequestHeaders.Add("test", "test2");
-});
+builder.Services.AddSingleton(new RestClient(new HttpClient()));
 
 var app = builder.Build();
 

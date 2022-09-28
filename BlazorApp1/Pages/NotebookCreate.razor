@@ -1,4 +1,5 @@
 ﻿@page "/new-notebook/{id:int}"
+@inject NotebookService NotebookService
 @inject RickAndMortyService RickAndMortyService
 @inject NavigationManager NavigationManager
 
@@ -40,7 +41,7 @@ else
     async Task HandleSubmit()
     {
         newNotebook.Character = character;
-        await RickAndMortyService.PostNotebook(newNotebook);
+        await NotebookService.PostNotebook(newNotebook);
         NavigationManager.NavigateTo("notebooks");
     }
 }
